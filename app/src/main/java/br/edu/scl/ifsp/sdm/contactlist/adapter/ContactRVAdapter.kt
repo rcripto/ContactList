@@ -20,7 +20,6 @@ class ContactRvAdapter(
         val nameTv: TextView = tileContactBinding.nameTv
         val emailTv: TextView = tileContactBinding.emailTv
 
-
         init {
             tileContactBinding.root.apply {
                 setOnCreateContextMenuListener { menu, _, _ ->
@@ -56,9 +55,6 @@ class ContactRvAdapter(
             with(holder) {
                 nameTv.text = contact.name
                 emailTv.text = contact.email
-                itemView.setOnClickListener {
-                    onContactClickListener.onContactClick(position)
-                }
             }
         }
     }
