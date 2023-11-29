@@ -46,13 +46,13 @@ class MainActivity : AppCompatActivity(), OnContactClickListener {
                 val contact = result.data?.getParcelableExtra<Contact>(EXTRA_CONTACT)
                 contact?.also { newOrEditedContact ->
                     if (contactList.any { it.id == newOrEditedContact.id }) {
-                        val position =
-                            contactList.indexOfFirst { it.id == newOrEditedContact.id }
+                        val position = contactList.indexOfFirst { it.id == newOrEditedContact.id }
                         contactList[position] = newOrEditedContact
+                        contactAdapter.notifyItemChanged(position)
                     } else {
                         contactList.add(newOrEditedContact)
+                        contactAdapter.notifyItemInserted(contactList.lastIndex)
                     }
-                    contactAdapter.notifyDataSetChanged()
                 }
             }
         }
@@ -79,35 +79,16 @@ class MainActivity : AppCompatActivity(), OnContactClickListener {
         }
     }
 
-    override fun onCreateContextMenu(
-        menu: ContextMenu?,
-        v: View?,
-        menuInfo: ContextMenu.ContextMenuInfo?
-    ) {
-        menuInflater.inflate(R.menu.context_menu_main, menu)
+    override fun onRemoveContactMenuItemClick(position: Int) {
+        contactList.removeAt(position)
+        contactAdapter.notifyItemRemoved(position)
+        Toast.makeText(this, getString(R.string.contact_removed), Toast.LENGTH_SHORT).show()
     }
 
-    override fun onContextItemSelected(item: MenuItem): Boolean {
-        val position = (item.menuInfo as AdapterContextMenuInfo).position
-
-        return when (item.itemId) {
-            R.id.removeContactMi -> {
-                contactList.removeAt(position)
-                contactAdapter.notifyDataSetChanged()
-                Toast.makeText(this, getString(R.string.contact_removed), Toast.LENGTH_SHORT).show()
-                true
-            }
-
-            R.id.editContactMi -> {
-                carl.launch(Intent(this, ContactActivity::class.java).apply {
-                    putExtra(EXTRA_CONTACT, contactList[position])
-                })
-                true
-            }
-            else -> {
-                false
-            }
-        }
+    override fun onEditContactMenuItemClick(position: Int) {
+        carl.launch(Intent(this, ContactActivity::class.java).apply {
+            putExtra(EXTRA_CONTACT, contactList[position])
+        })
     }
 
     override fun onDestroy() {

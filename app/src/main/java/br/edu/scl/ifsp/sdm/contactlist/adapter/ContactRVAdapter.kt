@@ -3,9 +3,11 @@ package br.edu.scl.ifsp.sdm.contactlist.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
-import br.edu.scl.ifsp.sdm.contactlist.model.Contact
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import br.edu.scl.ifsp.sdm.contactlist.R
 import br.edu.scl.ifsp.sdm.contactlist.databinding.TileContactBinding
+import br.edu.scl.ifsp.sdm.contactlist.model.Contact
 import br.edu.scl.ifsp.sdm.contactlist.view.OnContactClickListener
 
 class ContactRvAdapter(
@@ -17,6 +19,29 @@ class ContactRvAdapter(
         RecyclerView.ViewHolder(tileContactBinding.root) {
         val nameTv: TextView = tileContactBinding.nameTv
         val emailTv: TextView = tileContactBinding.emailTv
+
+
+        init {
+            tileContactBinding.root.apply {
+                setOnCreateContextMenuListener { menu, _, _ ->
+                    (onContactClickListener as AppCompatActivity).menuInflater.inflate(
+                        R.menu.context_menu_main,
+                        menu
+                    )
+                    menu.findItem(R.id.removeContactMi).setOnMenuItemClickListener {
+                        onContactClickListener.onRemoveContactMenuItemClick(adapterPosition)
+                        true
+                    }
+                    menu.findItem(R.id.editContactMi).setOnMenuItemClickListener {
+                        onContactClickListener.onEditContactMenuItemClick(adapterPosition)
+                        true
+                    }
+                }
+                setOnClickListener {
+                    onContactClickListener.onContactClick(adapterPosition)
+                }
+            }
+        }
     }
 
     override fun getItemCount() = contactList.size
